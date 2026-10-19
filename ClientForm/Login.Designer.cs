@@ -35,7 +35,7 @@ namespace ClientForm
             lb_UserName = new Label();
             lb_Password = new Label();
             btn_Login = new Button();
-            btn_SignIn = new Button();
+            btn_Register = new Button();
             SuspendLayout();
             // 
             // Logintext
@@ -69,7 +69,7 @@ namespace ClientForm
             // 
             lb_UserName.AutoSize = true;
             lb_UserName.Font = new Font("Segoe UI", 17F);
-            lb_UserName.ForeColor = AppColors.TextSecondary;
+            lb_UserName.ForeColor = Color.FromArgb(100, 116, 139);
             lb_UserName.Location = new Point(121, 187);
             lb_UserName.Name = "lb_UserName";
             lb_UserName.Size = new Size(154, 31);
@@ -80,7 +80,7 @@ namespace ClientForm
             // 
             lb_Password.AutoSize = true;
             lb_Password.Font = new Font("Segoe UI", 17F);
-            lb_Password.ForeColor = AppColors.TextSecondary;
+            lb_Password.ForeColor = Color.FromArgb(100, 116, 139);
             lb_Password.Location = new Point(121, 252);
             lb_Password.Name = "lb_Password";
             lb_Password.Size = new Size(121, 31);
@@ -98,24 +98,24 @@ namespace ClientForm
             btn_Login.MouseEnter += btn_Login_MouseEnter;
             btn_Login.MouseLeave += btn_Login_MouseLeave;
             // 
-            // btn_SignIn
+            // btn_Register
             // 
-            btn_SignIn.Location = new Point(351, 346);
-            btn_SignIn.Name = "btn_SignIn";
-            btn_SignIn.Size = new Size(140, 47);
-            btn_SignIn.TabIndex = 7;
-            btn_SignIn.Text = "Đăng ký";
-            btn_SignIn.UseVisualStyleBackColor = true;
-            btn_SignIn.Click += btn_SignIn_Click;
-            btn_SignIn.MouseEnter += btn_SignIn_MouseEnter;
-            btn_SignIn.MouseLeave += btn_SignIn_MouseLeave;
+            btn_Register.Location = new Point(351, 346);
+            btn_Register.Name = "btn_Register";
+            btn_Register.Size = new Size(140, 47);
+            btn_Register.TabIndex = 7;
+            btn_Register.Text = "Đăng ký";
+            btn_Register.UseVisualStyleBackColor = true;
+            btn_Register.Click += btn_Register_Click;
+            btn_Register.MouseEnter += btn_Register_MouseEnter;
+            btn_Register.MouseLeave += btn_Register_MouseLeave;
             // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(636, 649);
-            Controls.Add(btn_SignIn);
+            Controls.Add(btn_Register);
             Controls.Add(btn_Login);
             Controls.Add(lb_Password);
             Controls.Add(lb_UserName);
@@ -138,6 +138,6 @@ namespace ClientForm
         private Label lb_UserName;
         private Label lb_Password;
         private Button btn_Login;
-        private Button btn_SignIn;
+        private Button btn_Register;
     }
 }

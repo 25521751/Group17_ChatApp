@@ -1,6 +1,6 @@
 ﻿namespace ClientForm
 {
-    partial class SignIn
+    partial class Register
     {
         /// <summary>
         /// Required designer variable.
@@ -33,12 +33,12 @@
             lb_UserName = new Label();
             txtbox_Password = new TextBox();
             txtbox_Username = new TextBox();
-            SignIntext = new Label();
-            btn_SignIn = new Button();
+            Registertext = new Label();
+            btn_Register = new Button();
             lb_Email = new Label();
             txtbox_Email = new TextBox();
-            label1 = new Label();
-            linkLabel1 = new LinkLabel();
+            lb_text = new Label();
+            lkb_Register = new LinkLabel();
             SuspendLayout();
             // 
             // lb_Nofication
@@ -89,27 +89,27 @@
             txtbox_Username.Size = new Size(229, 34);
             txtbox_Username.TabIndex = 10;
             // 
-            // SignIntext
+            // Registertext
             // 
-            SignIntext.AutoSize = true;
-            SignIntext.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
-            SignIntext.ForeColor = Color.FromArgb(15, 23, 42);
-            SignIntext.Location = new Point(240, 71);
-            SignIntext.Name = "SignIntext";
-            SignIntext.Size = new Size(137, 37);
-            SignIntext.TabIndex = 9;
-            SignIntext.Text = "ĐĂNG KÝ";
+            Registertext.AutoSize = true;
+            Registertext.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            Registertext.ForeColor = Color.FromArgb(15, 23, 42);
+            Registertext.Location = new Point(240, 71);
+            Registertext.Name = "Registertext";
+            Registertext.Size = new Size(137, 37);
+            Registertext.TabIndex = 9;
+            Registertext.Text = "ĐĂNG KÝ";
             // 
-            // btn_SignIn
+            // btn_Register
             // 
-            btn_SignIn.Location = new Point(207, 450);
-            btn_SignIn.Name = "btn_SignIn";
-            btn_SignIn.Size = new Size(204, 47);
-            btn_SignIn.TabIndex = 15;
-            btn_SignIn.Text = "Đăng ký";
-            btn_SignIn.UseVisualStyleBackColor = true;
-            btn_SignIn.MouseEnter += btn_SignIn_MouseEnter;
-            btn_SignIn.MouseLeave += btn_SignIn_MouseLeave;
+            btn_Register.Location = new Point(207, 450);
+            btn_Register.Name = "btn_Register";
+            btn_Register.Size = new Size(204, 47);
+            btn_Register.TabIndex = 15;
+            btn_Register.Text = "Đăng ký";
+            btn_Register.UseVisualStyleBackColor = true;
+            btn_Register.MouseEnter += btn_Register_MouseEnter;
+            btn_Register.MouseLeave += btn_Register_MouseLeave;
             // 
             // lb_Email
             // 
@@ -130,48 +130,48 @@
             txtbox_Email.Size = new Size(229, 34);
             txtbox_Email.TabIndex = 16;
             // 
-            // label1
+            // lb_text
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 13F);
-            label1.Location = new Point(171, 531);
-            label1.Name = "label1";
-            label1.Size = new Size(144, 25);
-            label1.TabIndex = 18;
-            label1.Text = "Đã có tài khoản?";
+            lb_text.AutoSize = true;
+            lb_text.Font = new Font("Segoe UI", 13F);
+            lb_text.Location = new Point(171, 531);
+            lb_text.Name = "lb_text";
+            lb_text.Size = new Size(144, 25);
+            lb_text.TabIndex = 18;
+            lb_text.Text = "Đã có tài khoản?";
             // 
-            // linkLabel1
+            // lkb_Register
             // 
-            linkLabel1.AutoSize = true;
-            linkLabel1.Font = new Font("Segoe UI", 13F);
-            linkLabel1.Location = new Point(315, 531);
-            linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(103, 25);
-            linkLabel1.TabIndex = 19;
-            linkLabel1.TabStop = true;
-            linkLabel1.Text = "Đăng Nhập";
-            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            lkb_Register.AutoSize = true;
+            lkb_Register.Font = new Font("Segoe UI", 13F);
+            lkb_Register.Location = new Point(315, 531);
+            lkb_Register.Name = "lkb_Register";
+            lkb_Register.Size = new Size(103, 25);
+            lkb_Register.TabIndex = 19;
+            lkb_Register.TabStop = true;
+            lkb_Register.Text = "Đăng Nhập";
+            lkb_Register.LinkClicked += lkb_Register_LinkClicked;
             // 
-            // SignIn
+            // Register
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(636, 649);
-            Controls.Add(linkLabel1);
-            Controls.Add(label1);
+            Controls.Add(lkb_Register);
+            Controls.Add(lb_text);
             Controls.Add(lb_Email);
             Controls.Add(txtbox_Email);
-            Controls.Add(btn_SignIn);
+            Controls.Add(btn_Register);
             Controls.Add(lb_Nofication);
             Controls.Add(lb_Password);
             Controls.Add(lb_UserName);
             Controls.Add(txtbox_Password);
             Controls.Add(txtbox_Username);
-            Controls.Add(SignIntext);
+            Controls.Add(Registertext);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Name = "SignIn";
+            Name = "Register";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "SignIn";
+            Text = "Register";
             ResumeLayout(false);
             PerformLayout();
         }
@@ -183,11 +183,11 @@
         private Label lb_UserName;
         private TextBox txtbox_Password;
         private TextBox txtbox_Username;
-        private Label SignIntext;
-        private Button btn_SignIn;
+        private Label Registertext;
+        private Button btn_Register;
         private Label lb_Email;
         private TextBox txtbox_Email;
-        private Label label1;
-        private LinkLabel linkLabel1;
+        private Label lb_text;
+        private LinkLabel lkb_Register;
     }
 }

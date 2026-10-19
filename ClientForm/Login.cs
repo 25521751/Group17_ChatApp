@@ -21,21 +21,21 @@ namespace ClientForm
             btn_Login.ForeColor = Color.Black;
         }
 
-        private void btn_SignIn_MouseEnter(object sender, EventArgs e)
+        private void btn_Register_MouseEnter(object sender, EventArgs e)
         {
-            btn_SignIn.BackColor = AppColors.PrimaryHover;
-            btn_SignIn.ForeColor = Color.White;
+            btn_Register.BackColor = AppColors.PrimaryHover;
+            btn_Register.ForeColor = Color.White;
         }
 
-        private void btn_SignIn_MouseLeave(object sender, EventArgs e)
+        private void btn_Register_MouseLeave(object sender, EventArgs e)
         {
-            btn_SignIn.BackColor = Color.White;
-            btn_SignIn.ForeColor = Color.Black;
+            btn_Register.BackColor = Color.White;
+            btn_Register.ForeColor = Color.Black;
         }
 
-        private void btn_SignIn_Click(object sender, EventArgs e)
+        private void btn_Register_Click(object sender, EventArgs e)
         {
-            var DangKy = new SignIn();
+            var DangKy = new Register();
             DangKy.ShowDialog();
         }
     }
