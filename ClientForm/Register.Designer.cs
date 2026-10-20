@@ -39,13 +39,15 @@
             txtbox_Email = new TextBox();
             lb_text = new Label();
             lkb_Register = new LinkLabel();
+            lb_SaiDinhDang = new Label();
+            btn_ShowPassword = new Button();
             SuspendLayout();
             // 
             // lb_Nofication
             // 
             lb_Nofication.AutoSize = true;
             lb_Nofication.Font = new Font("Segoe UI", 12F);
-            lb_Nofication.Location = new Point(99, 389);
+            lb_Nofication.Location = new Point(101, 390);
             lb_Nofication.Name = "lb_Nofication";
             lb_Nofication.Size = new Size(470, 42);
             lb_Nofication.TabIndex = 14;
@@ -56,7 +58,7 @@
             lb_Password.AutoSize = true;
             lb_Password.Font = new Font("Segoe UI", 17F);
             lb_Password.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_Password.Location = new Point(130, 295);
+            lb_Password.Location = new Point(130, 297);
             lb_Password.Name = "lb_Password";
             lb_Password.Size = new Size(121, 31);
             lb_Password.TabIndex = 13;
@@ -67,7 +69,7 @@
             lb_UserName.AutoSize = true;
             lb_UserName.Font = new Font("Segoe UI", 17F);
             lb_UserName.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_UserName.Location = new Point(130, 161);
+            lb_UserName.Location = new Point(129, 166);
             lb_UserName.Name = "lb_UserName";
             lb_UserName.Size = new Size(154, 31);
             lb_UserName.TabIndex = 12;
@@ -76,17 +78,18 @@
             // txtbox_Password
             // 
             txtbox_Password.Font = new Font("Segoe UI", 15F);
-            txtbox_Password.Location = new Point(301, 292);
+            txtbox_Password.Location = new Point(289, 294);
             txtbox_Password.Name = "txtbox_Password";
-            txtbox_Password.Size = new Size(229, 34);
+            txtbox_Password.PasswordChar = '*';
+            txtbox_Password.Size = new Size(259, 34);
             txtbox_Password.TabIndex = 11;
             // 
             // txtbox_Username
             // 
             txtbox_Username.Font = new Font("Segoe UI", 15F);
-            txtbox_Username.Location = new Point(301, 161);
+            txtbox_Username.Location = new Point(289, 163);
             txtbox_Username.Name = "txtbox_Username";
-            txtbox_Username.Size = new Size(229, 34);
+            txtbox_Username.Size = new Size(259, 34);
             txtbox_Username.TabIndex = 10;
             // 
             // Registertext
@@ -108,6 +111,7 @@
             btn_Register.TabIndex = 15;
             btn_Register.Text = "Đăng ký";
             btn_Register.UseVisualStyleBackColor = true;
+            btn_Register.Click += btn_Register_Click;
             btn_Register.MouseEnter += btn_Register_MouseEnter;
             btn_Register.MouseLeave += btn_Register_MouseLeave;
             // 
@@ -116,7 +120,7 @@
             lb_Email.AutoSize = true;
             lb_Email.Font = new Font("Segoe UI", 17F);
             lb_Email.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_Email.Location = new Point(130, 229);
+            lb_Email.Location = new Point(130, 231);
             lb_Email.Name = "lb_Email";
             lb_Email.Size = new Size(75, 31);
             lb_Email.TabIndex = 17;
@@ -125,9 +129,9 @@
             // txtbox_Email
             // 
             txtbox_Email.Font = new Font("Segoe UI", 15F);
-            txtbox_Email.Location = new Point(301, 226);
+            txtbox_Email.Location = new Point(289, 228);
             txtbox_Email.Name = "txtbox_Email";
-            txtbox_Email.Size = new Size(229, 34);
+            txtbox_Email.Size = new Size(259, 34);
             txtbox_Email.TabIndex = 16;
             // 
             // lb_text
@@ -152,11 +156,35 @@
             lkb_Register.Text = "Đăng Nhập";
             lkb_Register.LinkClicked += lkb_Register_LinkClicked;
             // 
+            // lb_SaiDinhDang
+            // 
+            lb_SaiDinhDang.AutoSize = true;
+            lb_SaiDinhDang.Font = new Font("Segoe UI", 12F);
+            lb_SaiDinhDang.ForeColor = Color.FromArgb(220, 38, 38);
+            lb_SaiDinhDang.Location = new Point(289, 340);
+            lb_SaiDinhDang.Name = "lb_SaiDinhDang";
+            lb_SaiDinhDang.Size = new Size(0, 21);
+            lb_SaiDinhDang.TabIndex = 20;
+            // 
+            // btn_ShowPassword
+            // 
+            btn_ShowPassword.Font = new Font("Segoe UI", 13F);
+            btn_ShowPassword.ImageAlign = ContentAlignment.BottomRight;
+            btn_ShowPassword.Location = new Point(554, 294);
+            btn_ShowPassword.Name = "btn_ShowPassword";
+            btn_ShowPassword.Size = new Size(33, 34);
+            btn_ShowPassword.TabIndex = 21;
+            btn_ShowPassword.Text = "🔒";
+            btn_ShowPassword.UseVisualStyleBackColor = true;
+            btn_ShowPassword.Click += btn_ShowPassword_Click;
+            // 
             // Register
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(636, 649);
+            Controls.Add(btn_ShowPassword);
+            Controls.Add(lb_SaiDinhDang);
             Controls.Add(lkb_Register);
             Controls.Add(lb_text);
             Controls.Add(lb_Email);
@@ -189,5 +217,7 @@
         private TextBox txtbox_Email;
         private Label lb_text;
         private LinkLabel lkb_Register;
+        private Label lb_SaiDinhDang;
+        private Button btn_ShowPassword;
     }
 }
