@@ -34,31 +34,37 @@ namespace ClientForm
             this.Close();
         }
 
-        private bool KiemTraMatKhau(string matKhau)
+        private string KiemTraMatKhau(string matKhau)
         {
+            if (matKhau == "")
+                return "\nVui lòng nhập mật khẩu";
             bool du8KyTu = matKhau.Length >= 8;
             bool coChuSo = matKhau.Any(char.IsDigit);
             bool coChuHoa = matKhau.Any(char.IsUpper);
             bool coKyTuDacBiet = matKhau.Any(c =>
                 !char.IsLetterOrDigit(c));
-
-            return du8KyTu && coChuSo &&
-                   coChuHoa && coKyTuDacBiet;
+            if (!(du8KyTu && coChuHoa && coChuHoa && coKyTuDacBiet))
+                return "\nMật khẩu không đúng yêu cầu hãy chọn lại";
+            else
+                return "\n";
+        }
+        private string KiemtraUser(string User)
+        {
+            if (User == "")
+                return "User không được để trống.";
+            return "";
+        }
+        private string KiemtraEmail(string Email)
+        {
+            if (Email == "")
+                return "\nEmail không được để trống.";
+            return "\n";
         }
 
         private void btn_Register_Click(object sender, EventArgs e)
         {
-            string check = txtbox_Password.Text;
-            if (check == "")
-            {
-                lb_SaiDinhDang.Text = "Vui lòng nhập mật khẩu";
-            }
-            else if (!KiemTraMatKhau(check))
-            {
-                lb_SaiDinhDang.Text = "Mật khẩu không đúng yêu cầu hãy chọn lại";
-            }
-            else
-                lb_SaiDinhDang.Text = "";
+            string check = KiemtraUser(txtbox_Username.Text) + KiemtraEmail(txtbox_Email.Text) + KiemTraMatKhau(txtbox_Password.Text);
+            lb_SaiDinhDang.Text = check;
         }
 
         private void btn_ShowPassword_Click(object sender, EventArgs e)

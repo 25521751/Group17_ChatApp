@@ -36,6 +36,7 @@ namespace ClientForm
             lb_Password = new Label();
             btn_Login = new Button();
             btn_Register = new Button();
+            lkb_ForgotPassword = new LinkLabel();
             SuspendLayout();
             // 
             // Logintext
@@ -43,7 +44,7 @@ namespace ClientForm
             Logintext.AutoSize = true;
             Logintext.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
             Logintext.ForeColor = Color.FromArgb(15, 23, 42);
-            Logintext.Location = new Point(216, 90);
+            Logintext.Location = new Point(228, 102);
             Logintext.Name = "Logintext";
             Logintext.Size = new Size(181, 37);
             Logintext.TabIndex = 1;
@@ -52,17 +53,17 @@ namespace ClientForm
             // txtb_Username
             // 
             txtb_Username.Font = new Font("Segoe UI", 15F);
-            txtb_Username.Location = new Point(292, 187);
+            txtb_Username.Location = new Point(261, 237);
             txtb_Username.Name = "txtb_Username";
-            txtb_Username.Size = new Size(229, 34);
+            txtb_Username.Size = new Size(274, 34);
             txtb_Username.TabIndex = 2;
             // 
             // txtbox_Password
             // 
             txtbox_Password.Font = new Font("Segoe UI", 15F);
-            txtbox_Password.Location = new Point(292, 249);
+            txtbox_Password.Location = new Point(261, 176);
             txtbox_Password.Name = "txtbox_Password";
-            txtbox_Password.Size = new Size(229, 34);
+            txtbox_Password.Size = new Size(274, 34);
             txtbox_Password.TabIndex = 3;
             // 
             // lb_UserName
@@ -70,7 +71,7 @@ namespace ClientForm
             lb_UserName.AutoSize = true;
             lb_UserName.Font = new Font("Segoe UI", 17F);
             lb_UserName.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_UserName.Location = new Point(121, 187);
+            lb_UserName.Location = new Point(80, 240);
             lb_UserName.Name = "lb_UserName";
             lb_UserName.Size = new Size(154, 31);
             lb_UserName.TabIndex = 4;
@@ -81,7 +82,7 @@ namespace ClientForm
             lb_Password.AutoSize = true;
             lb_Password.Font = new Font("Segoe UI", 17F);
             lb_Password.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_Password.Location = new Point(121, 252);
+            lb_Password.Location = new Point(80, 176);
             lb_Password.Name = "lb_Password";
             lb_Password.Size = new Size(121, 31);
             lb_Password.TabIndex = 5;
@@ -89,9 +90,10 @@ namespace ClientForm
             // 
             // btn_Login
             // 
-            btn_Login.Location = new Point(131, 346);
+            btn_Login.FlatStyle = FlatStyle.Flat;
+            btn_Login.Location = new Point(110, 377);
             btn_Login.Name = "btn_Login";
-            btn_Login.Size = new Size(140, 47);
+            btn_Login.Size = new Size(143, 52);
             btn_Login.TabIndex = 6;
             btn_Login.Text = "Đăng nhập";
             btn_Login.UseVisualStyleBackColor = true;
@@ -100,9 +102,10 @@ namespace ClientForm
             // 
             // btn_Register
             // 
-            btn_Register.Location = new Point(351, 346);
+            btn_Register.FlatStyle = FlatStyle.Flat;
+            btn_Register.Location = new Point(346, 377);
             btn_Register.Name = "btn_Register";
-            btn_Register.Size = new Size(140, 47);
+            btn_Register.Size = new Size(143, 52);
             btn_Register.TabIndex = 7;
             btn_Register.Text = "Đăng ký";
             btn_Register.UseVisualStyleBackColor = true;
@@ -110,11 +113,24 @@ namespace ClientForm
             btn_Register.MouseEnter += btn_Register_MouseEnter;
             btn_Register.MouseLeave += btn_Register_MouseLeave;
             // 
+            // lkb_ForgotPassword
+            // 
+            lkb_ForgotPassword.AutoSize = true;
+            lkb_ForgotPassword.Font = new Font("Segoe UI", 11F);
+            lkb_ForgotPassword.Location = new Point(419, 342);
+            lkb_ForgotPassword.Name = "lkb_ForgotPassword";
+            lkb_ForgotPassword.Size = new Size(116, 20);
+            lkb_ForgotPassword.TabIndex = 8;
+            lkb_ForgotPassword.TabStop = true;
+            lkb_ForgotPassword.Text = "Quên mật khẩu?";
+            lkb_ForgotPassword.LinkClicked += lkb_ForgotPassword_LinkClicked;
+            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(636, 649);
+            Controls.Add(lkb_ForgotPassword);
             Controls.Add(btn_Register);
             Controls.Add(btn_Login);
             Controls.Add(lb_Password);
@@ -139,5 +155,6 @@ namespace ClientForm
         private Label lb_Password;
         private Button btn_Login;
         private Button btn_Register;
+        private LinkLabel lkb_ForgotPassword;
     }
 }
