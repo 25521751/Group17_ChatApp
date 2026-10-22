@@ -58,7 +58,7 @@
             lb_Password.AutoSize = true;
             lb_Password.Font = new Font("Segoe UI", 17F);
             lb_Password.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_Password.Location = new Point(130, 297);
+            lb_Password.Location = new Point(112, 271);
             lb_Password.Name = "lb_Password";
             lb_Password.Size = new Size(121, 31);
             lb_Password.TabIndex = 13;
@@ -69,7 +69,7 @@
             lb_UserName.AutoSize = true;
             lb_UserName.Font = new Font("Segoe UI", 17F);
             lb_UserName.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_UserName.Location = new Point(129, 166);
+            lb_UserName.Location = new Point(111, 140);
             lb_UserName.Name = "lb_UserName";
             lb_UserName.Size = new Size(154, 31);
             lb_UserName.TabIndex = 12;
@@ -78,7 +78,7 @@
             // txtbox_Password
             // 
             txtbox_Password.Font = new Font("Segoe UI", 15F);
-            txtbox_Password.Location = new Point(289, 294);
+            txtbox_Password.Location = new Point(271, 268);
             txtbox_Password.Name = "txtbox_Password";
             txtbox_Password.PasswordChar = '*';
             txtbox_Password.Size = new Size(259, 34);
@@ -87,7 +87,7 @@
             // txtbox_Username
             // 
             txtbox_Username.Font = new Font("Segoe UI", 15F);
-            txtbox_Username.Location = new Point(289, 163);
+            txtbox_Username.Location = new Point(271, 137);
             txtbox_Username.Name = "txtbox_Username";
             txtbox_Username.Size = new Size(259, 34);
             txtbox_Username.TabIndex = 10;
@@ -97,7 +97,7 @@
             Registertext.AutoSize = true;
             Registertext.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
             Registertext.ForeColor = Color.FromArgb(15, 23, 42);
-            Registertext.Location = new Point(240, 71);
+            Registertext.Location = new Point(244, 83);
             Registertext.Name = "Registertext";
             Registertext.Size = new Size(137, 37);
             Registertext.TabIndex = 9;
@@ -105,6 +105,7 @@
             // 
             // btn_Register
             // 
+            btn_Register.FlatStyle = FlatStyle.Flat;
             btn_Register.Location = new Point(207, 450);
             btn_Register.Name = "btn_Register";
             btn_Register.Size = new Size(204, 47);
@@ -120,7 +121,7 @@
             lb_Email.AutoSize = true;
             lb_Email.Font = new Font("Segoe UI", 17F);
             lb_Email.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_Email.Location = new Point(130, 231);
+            lb_Email.Location = new Point(112, 205);
             lb_Email.Name = "lb_Email";
             lb_Email.Size = new Size(75, 31);
             lb_Email.TabIndex = 17;
@@ -129,7 +130,7 @@
             // txtbox_Email
             // 
             txtbox_Email.Font = new Font("Segoe UI", 15F);
-            txtbox_Email.Location = new Point(289, 228);
+            txtbox_Email.Location = new Point(271, 202);
             txtbox_Email.Name = "txtbox_Email";
             txtbox_Email.Size = new Size(259, 34);
             txtbox_Email.TabIndex = 16;
@@ -159,18 +160,18 @@
             // lb_SaiDinhDang
             // 
             lb_SaiDinhDang.AutoSize = true;
-            lb_SaiDinhDang.Font = new Font("Segoe UI", 12F);
+            lb_SaiDinhDang.Font = new Font("Segoe UI", 10F);
             lb_SaiDinhDang.ForeColor = Color.FromArgb(220, 38, 38);
-            lb_SaiDinhDang.Location = new Point(289, 340);
+            lb_SaiDinhDang.Location = new Point(271, 305);
             lb_SaiDinhDang.Name = "lb_SaiDinhDang";
-            lb_SaiDinhDang.Size = new Size(0, 21);
+            lb_SaiDinhDang.Size = new Size(0, 19);
             lb_SaiDinhDang.TabIndex = 20;
             // 
             // btn_ShowPassword
             // 
             btn_ShowPassword.Font = new Font("Segoe UI", 13F);
             btn_ShowPassword.ImageAlign = ContentAlignment.BottomRight;
-            btn_ShowPassword.Location = new Point(554, 294);
+            btn_ShowPassword.Location = new Point(536, 268);
             btn_ShowPassword.Name = "btn_ShowPassword";
             btn_ShowPassword.Size = new Size(33, 34);
             btn_ShowPassword.TabIndex = 21;
@@ -197,6 +198,7 @@
             Controls.Add(txtbox_Username);
             Controls.Add(Registertext);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "Register";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Register";

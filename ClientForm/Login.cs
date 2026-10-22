@@ -12,7 +12,7 @@ namespace ClientForm
         private void btn_Login_MouseEnter(object sender, EventArgs e)
         {
             btn_Login.BackColor = AppColors.PrimaryHover;
-            btn_Login.ForeColor = Color.White;
+            btn_Login.ForeColor = AppColors.Selected;
         }
 
         private void btn_Login_MouseLeave(object sender, EventArgs e)
@@ -24,7 +24,7 @@ namespace ClientForm
         private void btn_Register_MouseEnter(object sender, EventArgs e)
         {
             btn_Register.BackColor = AppColors.PrimaryHover;
-            btn_Register.ForeColor = Color.White;
+            btn_Register.ForeColor = AppColors.Selected;
         }
 
         private void btn_Register_MouseLeave(object sender, EventArgs e)
@@ -37,6 +37,12 @@ namespace ClientForm
         {
             var DangKy = new Register();
             DangKy.ShowDialog();
+        }
+
+        private void lkb_ForgotPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var Quenmk = new ForgotPassword();
+            Quenmk.ShowDialog();
         }
     }
 }
