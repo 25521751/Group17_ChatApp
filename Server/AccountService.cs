@@ -15,6 +15,7 @@ namespace Server
         {
             public string Username { get; set; }
             public string DisplayName { get; set; }
+            public string Email { get; set; }
             public byte[] PasswordSalt { get; set; }
             public byte[] PasswordHash { get; set; }
         }
@@ -49,12 +50,26 @@ namespace Server
 
             public string Register(
                 string username,
+                string email,
                 string password,
                 string displayName)
             {
                 if (string.IsNullOrWhiteSpace(username) ||
                     username.Length < 3 || username.Length > 32)
                     return "FAIL|INVALID_USERNAME";
+                if (string.IsNullOrWhiteSpace(email) ||
+                     email.Length > 254 ||
+                     email.Contains("|") ||
+                     email.Contains("\r") ||
+                     email.Contains("\n") ||
+                      !System.Text.RegularExpressions.Regex.IsMatch(
+                          email,
+                         @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                {
+                    return "FAIL|INVALID_EMAIL";
+                }
+
+                email = email.Trim();
 
                 foreach (char c in username)
                 {
@@ -105,6 +120,7 @@ namespace Server
                 var account = new UserAccount
                 {
                     Username = username,
+                    Email = email,
                     DisplayName = displayName,
                     PasswordSalt = salt,
                     PasswordHash = hash

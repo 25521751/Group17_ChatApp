@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -11,13 +10,13 @@ namespace ChatappZalu
 {
     public class ChatClient : IDisposable
     {
-        private TcpClient tcpClient;
-        private NetworkStream stream;
-        private StreamReader reader;
-        private StreamWriter writer;
+        private TcpClient? tcpClient;
+        private NetworkStream? stream;
+        private StreamReader? reader;
+        private StreamWriter? writer;
 
-        private CancellationTokenSource receiveCancellation;
-        private Task receiveTask;
+        private CancellationTokenSource? receiveCancellation;
+        private Task? receiveTask;
 
         private readonly SemaphoreSlim sendLock =
             new SemaphoreSlim(1, 1);
@@ -39,13 +38,13 @@ namespace ChatappZalu
         }
 
         // Server gửi về một dòng giao thức.
-        public event Action<string> LineReceived;
+        public event Action<string>? LineReceived;
 
         // Thông báo trạng thái kết nối.
-        public event Action<string> ConnectionStatusChanged;
+        public event Action<string>? ConnectionStatusChanged;
 
         // Thông báo lỗi mạng.
-        public event Action<string> ConnectionError;
+        public event Action<string>? ConnectionError;
 
         public async Task ConnectAsync(
             string ipAddress,
@@ -164,7 +163,7 @@ namespace ChatappZalu
             {
                 while (!token.IsCancellationRequested)
                 {
-                    string line =
+                    string? line =
                         await currentReader.ReadLineAsync();
 
                     if (line == null)
@@ -182,11 +181,10 @@ namespace ChatappZalu
             {
                 // Kết nối đã được đóng.
             }
-
             finally
             {
                 bool wasCurrentConnection = false;
-                CancellationTokenSource oldCancellation = null;
+                CancellationTokenSource? oldCancellation = null;
 
                 lock (stateLock)
                 {
@@ -217,13 +215,12 @@ namespace ChatappZalu
                         "Disconnected from server.");
                 }
             }
-
         }
 
         public void Disconnect()
         {
-            TcpClient oldClient;
-            CancellationTokenSource oldCancellation;
+            TcpClient? oldClient;
+            CancellationTokenSource? oldCancellation;
 
             lock (stateLock)
             {

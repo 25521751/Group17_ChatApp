@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,6 +26,10 @@ namespace Chat_room_test_TCP
         private bool isRunning = false;
         private List<TcpClient> clients = new List<TcpClient>();
         private Dictionary<TcpClient, string> clientNames = new Dictionary<TcpClient, string>();
+
+        private readonly object clientStateLock = new object();
+
+        private readonly Dictionary<TcpClient, SemaphoreSlim> clientWriteLocks = new Dictionary<TcpClient, SemaphoreSlim>();
 
         private readonly AccountService accountService = new AccountService(new InMemoryAccountRepository()); //ket noi account service vao server
         private async Task AcceptClientAsync()
@@ -60,14 +65,23 @@ namespace Chat_room_test_TCP
         }
 
 
+
         private async Task HandleClientAsync(TcpClient client)
         {
             string name = null;
             bool joined = false;
 
+            NetworkStream stream = null;
+            SemaphoreSlim writeLock = new SemaphoreSlim(1, 1);
+
+            lock (clientStateLock)
+            {
+                clientWriteLocks[client] = writeLock;
+            }
+
             try
             {
-                NetworkStream stream = client.GetStream();
+                stream = client.GetStream();
 
                 using (StreamReader reader = new StreamReader(
                     stream, Encoding.UTF8, false, 1024, true))
@@ -78,22 +92,17 @@ namespace Chat_room_test_TCP
 
                     string line;
 
-                    // Đọc liên tục cho đến khi client ngắt kết nối
                     while ((line = await reader.ReadLineAsync()) != null)
                     {
-                        // Tách lệnh và dữ liệu tại dấu | đầu tiên
                         string[] parts = line.Split(
                             new char[] { '|' }, 2);
 
                         string command = parts[0];
                         string data = parts.Length > 1 ? parts[1] : "";
 
-                        //làm giao thức của đăng ký
-
+                        // REGISTER: username|email|password
                         if (command == "REGISTER")
                         {
-                            // DATA phải có đúng 3 trường:
-                            // username|password|display_name
                             string[] fields = data.Split('|');
 
                             if (fields.Length != 3)
@@ -104,141 +113,171 @@ namespace Chat_room_test_TCP
                             }
 
                             string username = fields[0];
-                            string password = fields[1];
-                            string displayName = fields[2];
+                            string email = fields[1];
+                            string password = fields[2];
 
                             string result = accountService.Register(
-                                username, password, displayName);
+                                username, email, password, username);
 
                             await writer.WriteLineAsync(
                                 "REGISTER_RESULT|" + result);
 
-                            Server_ChatView.AppendText(
+                            LogServer(
                                 $"Register request: {username} - " +
-                                $"{(result.StartsWith("OK|") ? "Success" : "Failed")}\r\n");
+                                $"{(result.StartsWith("OK|") ? "Success" : "Failed")}");
+
+                            continue;
                         }
+
+                        // JOIN: tham gia phòng chat
                         else if (command == "JOIN")
                         {
-
-                            //
-
-                            // JOIN: Client xin tham gia phòng chat
-                            if (command == "JOIN")
+                            if (joined)
                             {
-                                if (joined)
-                                {
-                                    await writer.WriteLineAsync(
-                                        "ERROR|ALREADY_JOINED|Already joined");
-                                    continue;
-                                }
-
-                                name = data.Trim();
-
-                                if (name.Length == 0 ||
-                                    name.Length > 32 ||
-                                    name.Contains("|") ||
-                                    name.Contains("\r") ||
-                                    name.Contains("\n"))
-                                {
-                                    await writer.WriteLineAsync(
-                                        "ERROR|INVALID_NAME|Invalid display name");
-                                    continue;
-                                }
-
-                                if (clientNames.ContainsValue(name))
-                                {
-                                    await writer.WriteLineAsync(
-                                        "ERROR|NAME_IN_USE|Name is already in use");
-                                    continue;
-                                }
-
-                                clientNames[client] = name;
-                                clients.Add(client);
-                                joined = true;
-
-                                await writer.WriteLineAsync($"JOINED|{name}");
-
-                                Server_ChatView.AppendText(
-                                    $"{name} joined from " +
-                                    $"{client.Client.RemoteEndPoint}\r\n");
+                                await writer.WriteLineAsync(
+                                    "ERROR|ALREADY_JOINED|Already joined");
+                                continue;
                             }
-                            // MSG: Client gửi tin nhắn
-                            else if (command == "MSG")
+
+                            name = data.Trim();
+
+                            if (name.Length == 0 ||
+                                name.Length > 32 ||
+                                name.Contains("|") ||
+                                name.Contains("\r") ||
+                                name.Contains("\n"))
                             {
-                                if (!joined)
+                                await writer.WriteLineAsync(
+                                    "ERROR|INVALID_NAME|Invalid display name");
+                                continue;
+                            }
+
+                            bool nameInUse;
+
+                            lock (clientStateLock)
+                            {
+                                nameInUse = clientNames.ContainsValue(name);
+
+                                if (!nameInUse)
                                 {
-                                    await writer.WriteLineAsync(
-                                        "ERROR|NOT_JOINED|Join first");
-                                    continue;
+                                    clientNames[client] = name;
+                                    clients.Add(client);
+                                    joined = true;
                                 }
+                            }
 
-                                if (data.Length == 0 || data.Length > 2000)
+                            if (nameInUse)
+                            {
+                                await writer.WriteLineAsync(
+                                    "ERROR|NAME_IN_USE|Name is already in use");
+                                continue;
+                            }
+
+                            await writer.WriteLineAsync($"JOINED|{name}");
+
+                            LogServer(
+                                $"{name} joined from {client.Client.RemoteEndPoint}");
+
+                            continue;
+                        }
+
+                        // MSG: gửi tin nhắn đến các client khác
+                        else if (command == "MSG")
+                        {
+                            if (!joined)
+                            {
+                                await writer.WriteLineAsync(
+                                    "ERROR|NOT_JOINED|Join first");
+                                continue;
+                            }
+
+                            if (data.Length == 0 || data.Length > 2000)
+                            {
+                                await writer.WriteLineAsync(
+                                    "ERROR|INVALID_MESSAGE|Invalid message");
+                                continue;
+                            }
+
+                            string outgoing = $"FROM|{name}|{data}";
+                            TcpClient[] recipients;
+
+                            lock (clientStateLock)
+                            {
+                                recipients = clients
+                                    .Where(c => c != client)
+                                    .ToArray();
+                            }
+
+                            foreach (TcpClient other in recipients)
+                            {
+                                SemaphoreSlim otherLock;
+
+                                lock (clientStateLock)
                                 {
-                                    await writer.WriteLineAsync(
-                                        "ERROR|INVALID_MESSAGE|Invalid message");
-                                    continue;
-                                }
-
-                                string outgoing = $"FROM|{name}|{data}";
-
-                                // Gửi cho các client khác, không gửi lại người gửi
-                                foreach (TcpClient other in clients.ToArray())
-                                {
-                                    if (other == client)
-                                        continue;
-
-                                    if (other.Connected)
+                                    if (!clientWriteLocks.TryGetValue(
+                                        other, out otherLock))
                                     {
-                                        try
-                                        {
-                                            NetworkStream otherStream =
-                                                other.GetStream();
-
-                                            using (StreamWriter otherWriter =
-                                                new StreamWriter(
-                                                    otherStream,
-                                                    new UTF8Encoding(false),
-                                                    1024,
-                                                    true))
-                                            {
-                                                otherWriter.AutoFlush = true;
-                                                await otherWriter.WriteLineAsync(
-                                                    outgoing);
-                                            }
-                                        }
-                                        catch (IOException)
-                                        {
-                                            // Client đích có thể đã ngắt kết nối.
-                                        }
-                                        catch (SocketException)
-                                        {
-                                            // Bỏ qua lỗi kết nối của client đích.
-                                        }
+                                        continue;
                                     }
                                 }
 
-                                Server_ChatView.AppendText(
-                                    $"{name}: {data}\r\n");
-                            }
-                            // LEAVE: Client chủ động rời phòng chat
-                            else if (command == "LEAVE")
-                            {
-                                if (!joined)
-                                {
-                                    await writer.WriteLineAsync(
-                                        "ERROR|NOT_JOINED|Join first");
-                                    continue;
-                                }
+                                await otherLock.WaitAsync();
 
-                                await writer.WriteLineAsync("LEFT");
-                                break;
+                                try
+                                {
+                                    if (!other.Connected)
+                                        continue;
+
+                                    using (StreamWriter otherWriter =
+                                        new StreamWriter(
+                                            other.GetStream(),
+                                            new UTF8Encoding(false),
+                                            1024,
+                                            true))
+                                    {
+                                        otherWriter.AutoFlush = true;
+
+                                        await otherWriter.WriteLineAsync(outgoing);
+                                    }
+                                }
+                                catch (IOException)
+                                {
+                                    // Client đích có thể đã ngắt kết nối.
+                                }
+                                catch (SocketException)
+                                {
+                                    // Bỏ qua lỗi kết nối của client đích.
+                                }
+                                finally
+                                {
+                                    otherLock.Release();
+                                }
                             }
-                            // Lệnh không được hỗ trợ
-                            else
+
+                            LogServer($"{name}: {data}");
+
+                            continue;
+                        }
+
+                        // LEAVE: rời phòng chat
+                        else if (command == "LEAVE")
+                        {
+                            if (!joined)
                             {
                                 await writer.WriteLineAsync(
-                                    "ERROR|UNKNOWN_COMMAND|Unknown command");
+                                    "ERROR|NOT_JOINED|Join first");
+                                continue;
                             }
+
+                            await writer.WriteLineAsync("LEFT");
+                            break;
+                        }
+
+                        // Lệnh không được hỗ trợ
+                        else
+                        {
+                            await writer.WriteLineAsync(
+                                "ERROR|UNKNOWN_COMMAND|Unknown command");
                         }
                     }
                 }
@@ -253,23 +292,41 @@ namespace Chat_room_test_TCP
             }
             catch (ObjectDisposedException)
             {
-                // Socket đã bị đóng, ví dụ khi server dừng.
+                // Socket đã bị đóng.
             }
             finally
             {
-                if (joined)
+                lock (clientStateLock)
                 {
-                    clientNames.Remove(client);
                     clients.Remove(client);
-
-                    Server_ChatView.AppendText(
-                        $"{name} disconnected.\r\n");
+                    clientNames.Remove(client);
+                    clientWriteLocks.Remove(client);
                 }
 
                 client.Close();
+                writeLock.Dispose();
+
+                if (joined)
+                {
+                    LogServer($"{name} disconnected.");
+                }
             }
         }
 
+
+        private void LogServer(string message)
+        {
+            if (IsDisposed || !IsHandleCreated)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(() => LogServer(message)));
+                return;
+            }
+
+            Server_ChatView.AppendText(message + Environment.NewLine);
+        }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
