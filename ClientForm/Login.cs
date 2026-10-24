@@ -74,7 +74,6 @@ namespace ClientForm
                 MessageBox.Show("Đăng nhập thành công!");
 
                 this.Hide();
-
                 GiaoDien giaoDien = new GiaoDien();
                 giaoDien.ShowDialog();
 
