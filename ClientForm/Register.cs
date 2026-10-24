@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ClientForm
 {
@@ -79,6 +80,21 @@ namespace ClientForm
                 txtbox_Password.PasswordChar = '*';
                 btn_ShowPassword.Text = "🔒";
             }
+        }
+
+        private void txtbox_Username_TextChanged(object sender, EventArgs e)
+        {
+            txtbox_Username.MaxLength = 20;
+        }
+
+        private void txtbox_Email_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtbox_Password_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
