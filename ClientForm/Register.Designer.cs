@@ -47,9 +47,9 @@
             // 
             lb_Nofication.AutoSize = true;
             lb_Nofication.Font = new Font("Segoe UI", 12F);
-            lb_Nofication.Location = new Point(101, 390);
+            lb_Nofication.Location = new Point(115, 520);
             lb_Nofication.Name = "lb_Nofication";
-            lb_Nofication.Size = new Size(470, 42);
+            lb_Nofication.Size = new Size(596, 56);
             lb_Nofication.TabIndex = 14;
             lb_Nofication.Text = "Lưu ý: Mật khẩu phải có 8 ký tự trở lên trong đó bao gồm 1 chữ số,\r\n1 chữ cái in hoa và 1 ký tự đặc biệt (Ví dụ: K@123)";
             // 
@@ -58,9 +58,9 @@
             lb_Password.AutoSize = true;
             lb_Password.Font = new Font("Segoe UI", 17F);
             lb_Password.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_Password.Location = new Point(112, 271);
+            lb_Password.Location = new Point(128, 361);
             lb_Password.Name = "lb_Password";
-            lb_Password.Size = new Size(121, 31);
+            lb_Password.Size = new Size(151, 40);
             lb_Password.TabIndex = 13;
             lb_Password.Text = "Mật khẩu: ";
             // 
@@ -69,46 +69,51 @@
             lb_UserName.AutoSize = true;
             lb_UserName.Font = new Font("Segoe UI", 17F);
             lb_UserName.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_UserName.Location = new Point(111, 140);
+            lb_UserName.Location = new Point(112, 184);
             lb_UserName.Name = "lb_UserName";
-            lb_UserName.Size = new Size(154, 31);
+            lb_UserName.Size = new Size(192, 40);
             lb_UserName.TabIndex = 12;
             lb_UserName.Text = "Tên tài khoản:";
             // 
             // txtbox_Password
             // 
             txtbox_Password.Font = new Font("Segoe UI", 15F);
-            txtbox_Password.Location = new Point(271, 268);
+            txtbox_Password.Location = new Point(310, 357);
+            txtbox_Password.Margin = new Padding(3, 4, 3, 4);
             txtbox_Password.Name = "txtbox_Password";
             txtbox_Password.PasswordChar = '*';
-            txtbox_Password.Size = new Size(259, 34);
+            txtbox_Password.Size = new Size(295, 41);
             txtbox_Password.TabIndex = 11;
+            txtbox_Password.TextChanged += txtbox_Password_TextChanged;
             // 
             // txtbox_Username
             // 
             txtbox_Username.Font = new Font("Segoe UI", 15F);
-            txtbox_Username.Location = new Point(271, 137);
+            txtbox_Username.Location = new Point(310, 183);
+            txtbox_Username.Margin = new Padding(3, 4, 3, 4);
             txtbox_Username.Name = "txtbox_Username";
-            txtbox_Username.Size = new Size(259, 34);
+            txtbox_Username.Size = new Size(295, 41);
             txtbox_Username.TabIndex = 10;
+            txtbox_Username.TextChanged += txtbox_Username_TextChanged;
             // 
             // Registertext
             // 
             Registertext.AutoSize = true;
             Registertext.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
             Registertext.ForeColor = Color.FromArgb(15, 23, 42);
-            Registertext.Location = new Point(244, 83);
+            Registertext.Location = new Point(279, 111);
             Registertext.Name = "Registertext";
-            Registertext.Size = new Size(137, 37);
+            Registertext.Size = new Size(172, 46);
             Registertext.TabIndex = 9;
             Registertext.Text = "ĐĂNG KÝ";
             // 
             // btn_Register
             // 
             btn_Register.FlatStyle = FlatStyle.Flat;
-            btn_Register.Location = new Point(207, 450);
+            btn_Register.Location = new Point(237, 600);
+            btn_Register.Margin = new Padding(3, 4, 3, 4);
             btn_Register.Name = "btn_Register";
-            btn_Register.Size = new Size(204, 47);
+            btn_Register.Size = new Size(233, 63);
             btn_Register.TabIndex = 15;
             btn_Register.Text = "Đăng ký";
             btn_Register.UseVisualStyleBackColor = true;
@@ -121,27 +126,29 @@
             lb_Email.AutoSize = true;
             lb_Email.Font = new Font("Segoe UI", 17F);
             lb_Email.ForeColor = Color.FromArgb(100, 116, 139);
-            lb_Email.Location = new Point(112, 205);
+            lb_Email.Location = new Point(128, 273);
             lb_Email.Name = "lb_Email";
-            lb_Email.Size = new Size(75, 31);
+            lb_Email.Size = new Size(92, 40);
             lb_Email.TabIndex = 17;
             lb_Email.Text = "Email:";
             // 
             // txtbox_Email
             // 
             txtbox_Email.Font = new Font("Segoe UI", 15F);
-            txtbox_Email.Location = new Point(271, 202);
+            txtbox_Email.Location = new Point(310, 269);
+            txtbox_Email.Margin = new Padding(3, 4, 3, 4);
             txtbox_Email.Name = "txtbox_Email";
-            txtbox_Email.Size = new Size(259, 34);
+            txtbox_Email.Size = new Size(295, 41);
             txtbox_Email.TabIndex = 16;
+            txtbox_Email.TextChanged += txtbox_Email_TextChanged;
             // 
             // lb_text
             // 
             lb_text.AutoSize = true;
             lb_text.Font = new Font("Segoe UI", 13F);
-            lb_text.Location = new Point(171, 531);
+            lb_text.Location = new Point(195, 708);
             lb_text.Name = "lb_text";
-            lb_text.Size = new Size(144, 25);
+            lb_text.Size = new Size(172, 30);
             lb_text.TabIndex = 18;
             lb_text.Text = "Đã có tài khoản?";
             // 
@@ -149,9 +156,9 @@
             // 
             lkb_Register.AutoSize = true;
             lkb_Register.Font = new Font("Segoe UI", 13F);
-            lkb_Register.Location = new Point(315, 531);
+            lkb_Register.Location = new Point(360, 708);
             lkb_Register.Name = "lkb_Register";
-            lkb_Register.Size = new Size(103, 25);
+            lkb_Register.Size = new Size(122, 30);
             lkb_Register.TabIndex = 19;
             lkb_Register.TabStop = true;
             lkb_Register.Text = "Đăng Nhập";
@@ -162,18 +169,19 @@
             lb_SaiDinhDang.AutoSize = true;
             lb_SaiDinhDang.Font = new Font("Segoe UI", 10F);
             lb_SaiDinhDang.ForeColor = Color.FromArgb(220, 38, 38);
-            lb_SaiDinhDang.Location = new Point(271, 305);
+            lb_SaiDinhDang.Location = new Point(310, 407);
             lb_SaiDinhDang.Name = "lb_SaiDinhDang";
-            lb_SaiDinhDang.Size = new Size(0, 19);
+            lb_SaiDinhDang.Size = new Size(0, 23);
             lb_SaiDinhDang.TabIndex = 20;
             // 
             // btn_ShowPassword
             // 
             btn_ShowPassword.Font = new Font("Segoe UI", 13F);
             btn_ShowPassword.ImageAlign = ContentAlignment.BottomRight;
-            btn_ShowPassword.Location = new Point(536, 268);
+            btn_ShowPassword.Location = new Point(613, 357);
+            btn_ShowPassword.Margin = new Padding(3, 4, 3, 4);
             btn_ShowPassword.Name = "btn_ShowPassword";
-            btn_ShowPassword.Size = new Size(33, 34);
+            btn_ShowPassword.Size = new Size(38, 45);
             btn_ShowPassword.TabIndex = 21;
             btn_ShowPassword.Text = "🔒";
             btn_ShowPassword.UseVisualStyleBackColor = true;
@@ -181,9 +189,9 @@
             // 
             // Register
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(636, 649);
+            ClientSize = new Size(727, 865);
             Controls.Add(btn_ShowPassword);
             Controls.Add(lb_SaiDinhDang);
             Controls.Add(lkb_Register);
@@ -198,6 +206,7 @@
             Controls.Add(txtbox_Username);
             Controls.Add(Registertext);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(3, 4, 3, 4);
             MaximizeBox = false;
             Name = "Register";
             StartPosition = FormStartPosition.CenterScreen;

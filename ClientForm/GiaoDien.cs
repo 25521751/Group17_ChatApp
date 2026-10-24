@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -38,7 +39,7 @@ namespace ClientForm
             {
                 pnl_Chat, pnl_Friend, pnl_GroupChat, pnl_Setting
             };
-            foreach(Panel pnl in danhSachpanel)
+            foreach (Panel pnl in danhSachpanel)
             {
                 pnl.Visible = false;
             }
@@ -77,6 +78,27 @@ namespace ClientForm
         {
             btn_LogOut.BackColor = AppColors.Surface;
             btn_LogOut.ForeColor = AppColors.TextSecondary;
+        }
+
+        private void pnl_Chatting_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pnl_List_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void btn_LogOut_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Đăng xuất thành công!");
+
+            this.Hide();
+            Login login = new Login();
+            login.ShowDialog();
+
+            this.Close();
         }
     }
 }
