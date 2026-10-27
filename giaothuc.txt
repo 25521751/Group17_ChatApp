@@ -1,0 +1,17 @@
+Các giao thức hiện tại của Zalu
+
+Lệnh	Chiều	Ý nghĩa
+JOIN	Client → Server	Thông báo tên hiển thị khi kết nối | Đã xong
+JOINED	Server → Client	Server xác nhận kết nối thành công | Đã xong
+LEAVE	Client → Server	Client chủ động yêu cầu ngắt kết nối | Đã xong
+LEFT	Server → Client	Xác nhận đã xử lý yêu cầu rời | Đã xong
+ERROR	Hai chiều	Báo lỗi theo quy ước giao thức | Đã xong
+MSG	Client → Server	Gửi tin nhắn
+FROM	Server → Client	Chuyển tiếp tin nhắn kèm người gửi
+SYSTEM	Server → Client	Thông báo hệ thống
+REGISTER	Client → Server	Yêu cầu đăng ký | Đã xong
+REGISTER_RESULT	Server → Client	Kết quả đăng ký | Đã xong
+LOGIN	Client → Server	Yêu cầu đăng nhập
+LOGIN_RESULT	Server → Client	Kết quả đăng nhập
+LOGOUT	Client → Server	Đăng xuất khỏi tài khoản
+LOGOUT_RESULT	Server → Client	Kết quả đăng xuất
