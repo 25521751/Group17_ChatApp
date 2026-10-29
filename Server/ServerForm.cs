@@ -1,4 +1,5 @@
 ﻿using Server.Chat_room_test_TCP;
+using Server.ChatappZalu;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +31,10 @@ namespace Chat_room_test_TCP
         private readonly object clientStateLock = new object();
 
         private readonly Dictionary<TcpClient, SemaphoreSlim> clientWriteLocks = new Dictionary<TcpClient, SemaphoreSlim>();
+
+        private readonly Dictionary<TcpClient, UserSession> sessions = new Dictionary<TcpClient, UserSession>(); //Key — TcpClient: xác định kết nối TCP cụ thể của thiết bị.
+                                                                                                                 //Value — UserSession: lưu tài khoản đang đăng nhập trên kết nối đó.
+                                                                                                                 //Một tài khoản có thể đăng nhập từ nhiều thiết bị, vì mỗi thiết bị có một kết nối TCP riêng
 
         private readonly AccountService accountService = new AccountService(new InMemoryAccountRepository()); //ket noi account service vao server
         private async Task AcceptClientAsync()
@@ -129,9 +134,140 @@ namespace Chat_room_test_TCP
                             continue;
                         }
 
+
+                        // LOGIN: xác thực tài khoản
+
+                        else if (command == "LOGIN")
+                        {
+                            string[] fields = data.Split('|');
+
+                            if (fields.Length != 2)
+                            {
+                                await writer.WriteLineAsync(
+                                    "LOGIN_RESULT|FAIL|INVALID_DATA");
+                                continue;
+                            }
+
+                            string username = fields[0];
+                            string password = fields[1];
+
+                            // Không cho đăng nhập lại trên cùng một kết nối.
+                            bool alreadyLoggedIn;
+
+                            lock (clientStateLock)
+                            {
+                                alreadyLoggedIn = sessions.ContainsKey(client);
+                            }
+
+                            if (alreadyLoggedIn)
+                            {
+                                await writer.WriteLineAsync(
+                                    "LOGIN_RESULT|FAIL|ALREADY_LOGGED_IN");
+                                continue;
+                            }
+
+                            // Kiểm tra tài khoản và mật khẩu.
+                            string result = accountService.Login(username, password);
+
+                            if (result.StartsWith("OK|"))
+                            {
+                                string[] accountFields = result.Split('|');
+
+                                if (accountFields.Length < 3)
+                                {
+                                    await writer.WriteLineAsync(
+                                        "LOGIN_RESULT|FAIL|INVALID_ACCOUNT_DATA");
+                                    continue;
+                                }
+
+                                string authenticatedUsername = accountFields[1];
+                                string displayName = accountFields[2];
+
+                                // Chỉ tạo phiên khi xác thực thành công.
+                                lock (clientStateLock)
+                                {
+                                    sessions[client] = new UserSession(
+                                        authenticatedUsername,
+                                        displayName,
+                                        client);
+                                }
+
+                                await writer.WriteLineAsync(
+                                    $"LOGIN_RESULT|OK|{authenticatedUsername}|{displayName}");
+
+                                LogServer(
+                                    $"Login success: {authenticatedUsername} - " +
+                                    $"{client.Client.RemoteEndPoint}");
+                            }
+                            else
+                            {
+                                await writer.WriteLineAsync(
+                                    "LOGIN_RESULT|" + result);
+
+                                LogServer($"Login failed: {username}");
+                            }
+
+                            continue;
+                        }
+
+
+                        // LOGOUT: đăng xuất khỏi tài khoản
+                        //Theo code server hiện tại 29/10/2026, LOGOUT sẽ đóng kết nối TCP, chứ chưa có hệ thống phiên đăng nhập để thu hồi.
+                        //Vì vậy, đây là đăng xuất ở mức giao thức/kết nối, chưa phải quản lý phiên tài khoản hoàn chỉnh.
+
+
+                        else if (command == "LOGOUT")
+                        {
+                            UserSession session = null;
+
+                            // Chỉ xóa phiên của kết nối đang gửi LOGOUT.
+                            lock (clientStateLock)
+                            {
+                                if (sessions.TryGetValue(client, out session))
+                                {
+                                    sessions.Remove(client);
+                                }
+                            }
+
+                            if (session == null)
+                            {
+                                await writer.WriteLineAsync(
+                                    "LOGOUT_RESULT|FAIL|NOT_LOGGED_IN");
+                                continue;
+                            }
+
+                            await writer.WriteLineAsync(
+                                "LOGOUT_RESULT|OK|LOGGED_OUT");
+
+                            LogServer(
+                                $"Logout success: {session.Username} - " +
+                                $"{client.Client.RemoteEndPoint}");
+
+                            // Kết thúc kết nối này; không ảnh hưởng thiết bị khác.
+                            break;
+                        }
+
+
                         // JOIN: tham gia phòng chat
+
                         else if (command == "JOIN")
                         {
+                            // 1. Kiểm tra kết nối đã đăng nhập chưa.
+                            UserSession session = null;
+
+                            lock (clientStateLock)
+                            {
+                                sessions.TryGetValue(client, out session);
+                            }
+
+                            if (session == null)
+                            {
+                                await writer.WriteLineAsync(
+                                    "ERROR|NOT_AUTHENTICATED|Login first");
+                                continue;
+                            }
+
+                            // 2. Không cho tham gia phòng hai lần trên cùng kết nối.
                             if (joined)
                             {
                                 await writer.WriteLineAsync(
@@ -139,9 +275,11 @@ namespace Chat_room_test_TCP
                                 continue;
                             }
 
-                            name = data.Trim();
+                            // 3. Lấy tên hiển thị từ phiên đã xác thực.
+                            // Không tin tên do client tự gửi lên.
+                            name = session.DisplayName;
 
-                            if (name.Length == 0 ||
+                            if (string.IsNullOrWhiteSpace(name) ||
                                 name.Length > 32 ||
                                 name.Contains("|") ||
                                 name.Contains("\r") ||
@@ -152,6 +290,7 @@ namespace Chat_room_test_TCP
                                 continue;
                             }
 
+                            // 4. Kiểm tra tên đã có người sử dụng trong phòng chưa.
                             bool nameInUse;
 
                             lock (clientStateLock)
@@ -173,6 +312,7 @@ namespace Chat_room_test_TCP
                                 continue;
                             }
 
+                            // 5. Thông báo tham gia phòng thành công.
                             await writer.WriteLineAsync($"JOINED|{name}");
 
                             LogServer(
@@ -181,9 +321,27 @@ namespace Chat_room_test_TCP
                             continue;
                         }
 
+
                         // MSG: gửi tin nhắn đến các client khác
+
                         else if (command == "MSG")
                         {
+                            // 1. Kiểm tra phiên đăng nhập.
+                            UserSession session = null;
+
+                            lock (clientStateLock)
+                            {
+                                sessions.TryGetValue(client, out session);
+                            }
+
+                            if (session == null)
+                            {
+                                await writer.WriteLineAsync(
+                                    "ERROR|NOT_AUTHENTICATED|Login first");
+                                continue;
+                            }
+
+                            // 2. Kiểm tra đã tham gia phòng chat chưa.
                             if (!joined)
                             {
                                 await writer.WriteLineAsync(
@@ -191,14 +349,16 @@ namespace Chat_room_test_TCP
                                 continue;
                             }
 
-                            if (data.Length == 0 || data.Length > 2000)
+                            // 3. Kiểm tra nội dung tin nhắn.
+                            if (string.IsNullOrWhiteSpace(data) || data.Length > 2000)
                             {
                                 await writer.WriteLineAsync(
                                     "ERROR|INVALID_MESSAGE|Invalid message");
                                 continue;
                             }
 
-                            string outgoing = $"FROM|{name}|{data}";
+                            // 4. Dùng tên hiển thị từ phiên đã xác thực.
+                            string outgoing = $"FROM|{session.DisplayName}|{data}";
                             TcpClient[] recipients;
 
                             lock (clientStateLock)
@@ -208,6 +368,7 @@ namespace Chat_room_test_TCP
                                     .ToArray();
                             }
 
+                            // 5. Gửi tin nhắn đến các client khác trong phòng.
                             foreach (TcpClient other in recipients)
                             {
                                 SemaphoreSlim otherLock;
@@ -226,27 +387,31 @@ namespace Chat_room_test_TCP
                                 try
                                 {
                                     if (!other.Connected)
+                                    {
                                         continue;
+                                    }
 
-                                    using (StreamWriter otherWriter =
-                                        new StreamWriter(
-                                            other.GetStream(),
-                                            new UTF8Encoding(false),
-                                            1024,
-                                            true))
+                                    using (StreamWriter otherWriter = new StreamWriter(
+                                        other.GetStream(),
+                                        new UTF8Encoding(false),
+                                        1024,
+                                        true))
                                     {
                                         otherWriter.AutoFlush = true;
-
                                         await otherWriter.WriteLineAsync(outgoing);
                                     }
                                 }
                                 catch (IOException)
                                 {
-                                    // Client đích có thể đã ngắt kết nối.
+                                    // Client nhận có thể đã ngắt kết nối.
                                 }
                                 catch (SocketException)
                                 {
-                                    // Bỏ qua lỗi kết nối của client đích.
+                                    // Bỏ qua lỗi kết nối của client nhận.
+                                }
+                                catch (ObjectDisposedException)
+                                {
+                                    // Kết nối nhận đã bị đóng.
                                 }
                                 finally
                                 {
@@ -254,10 +419,11 @@ namespace Chat_room_test_TCP
                                 }
                             }
 
-                            LogServer($"{name}: {data}");
+                            LogServer($"{session.DisplayName}: {data}");
 
                             continue;
                         }
+
 
                         // LEAVE: rời phòng chat
                         else if (command == "LEAVE")
@@ -294,15 +460,34 @@ namespace Chat_room_test_TCP
             {
                 // Socket đã bị đóng.
             }
+
             finally
             {
+                //Xóa phiên đăng nhập của kết nối này.
+                UserSession endedSession = null;
+
                 lock (clientStateLock)
                 {
+                    if (sessions.TryGetValue(client, out endedSession))
+                    {
+                        sessions.Remove(client);
+                    }
+
+                    // Dọn trạng thái phòng chat và write lock.
                     clients.Remove(client);
                     clientNames.Remove(client);
                     clientWriteLocks.Remove(client);
                 }
 
+                // Ghi log nếu kết nối kết thúc khi còn phiên đăng nhập.
+                if (endedSession != null)
+                {
+                    LogServer(
+                        $"Session ended: {endedSession.Username} - " +
+                        $"{client.Client.RemoteEndPoint}");
+                }
+
+                //Đóng kết nối và giải phóng tài nguyên.
                 client.Close();
                 writeLock.Dispose();
 
@@ -311,6 +496,7 @@ namespace Chat_room_test_TCP
                     LogServer($"{name} disconnected.");
                 }
             }
+
         }
 
 

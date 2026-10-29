@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatappZalu;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,12 +12,73 @@ namespace ClientForm
 {
     public partial class GiaoDien : Form
     {
+        private bool logoutRequestPending = false;
+        private bool logoutCompleted = false;
         public GiaoDien()
         {
             InitializeComponent();
+            ChatClientManager.Client.LineReceived += Client_LineReceived;
+            this.FormClosed += GiaoDien_FormClosed;
+
             this.BackColor = AppColors.Background;
             ChonNut(btn_Chat);
             ChuyenPanel(pnl_Chat);
+        }
+
+
+        private void Client_LineReceived(string message)
+        {
+            if (!message.StartsWith("LOGOUT_RESULT|"))
+                return;
+
+            if (IsDisposed || !IsHandleCreated)
+                return;
+
+            BeginInvoke(new Action(() =>
+            {
+                if (IsDisposed || !logoutRequestPending)
+                    return;
+
+                string[] parts = message.Split('|');
+
+                logoutRequestPending = false;
+
+                if (parts.Length >= 3 && parts[1] == "OK")
+                {
+                    logoutCompleted = true;
+
+                    MessageBox.Show(
+                        "Đăng xuất thành công!",
+                        "Zalu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    // Server đã xác nhận đăng xuất.
+                    // Đóng kết nối vì server đã xử lý LOGOUT.
+                    ChatClientManager.Client.Disconnect();
+
+                    this.Hide();
+
+                    Login login = new Login();
+                    login.ShowDialog();
+
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "Server không xác nhận được yêu cầu đăng xuất.",
+                        "Zalu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            }));
+        }
+
+        private void GiaoDien_FormClosed(
+            object? sender, FormClosedEventArgs e)
+        {
+            ChatClientManager.Client.LineReceived -= Client_LineReceived;
         }
 
         private void ChonNut(Button nutDuocChon)
@@ -90,15 +152,45 @@ namespace ClientForm
 
         }
 
-        private void btn_LogOut_Click(object sender, EventArgs e)
+
+
+        private async void btn_LogOut_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Đăng xuất thành công!");
+            var client = ChatClientManager.Client;
 
-            this.Hide();
-            Login login = new Login();
-            login.ShowDialog();
+            if (logoutRequestPending)
+                return;
 
-            this.Close();
+            if (!client.IsConnected)
+            {
+                MessageBox.Show(
+                    "Không có kết nối đến server. Không thể xác nhận đăng xuất.",
+                    "Zalu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            logoutRequestPending = true;
+            btn_LogOut.Enabled = false;
+
+            try
+            {
+                await client.SendLineAsync("LOGOUT");
+            }
+            catch (Exception ex)
+            {
+                logoutRequestPending = false;
+                btn_LogOut.Enabled = true;
+
+                MessageBox.Show(
+                    "Gửi yêu cầu đăng xuất thất bại.\n" + ex.Message,
+                    "Lỗi kết nối",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
+
+
     }
 }
