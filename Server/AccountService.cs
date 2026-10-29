@@ -23,7 +23,8 @@ namespace Server
         // Hợp đồng lưu trữ: sau này có thể thay bằng SQL Server.
         public interface IAccountRepository
         {
-            bool TryAdd(UserAccount account);
+            bool TryAdd(UserAccount account); //thêm tài khoảng
+            bool TryGet(string username, out UserAccount account); //tìm tài khoảng để đăng nhập
         }
 
         // Bản thử nghiệm: tài khoản chỉ tồn tại trong RAM.
@@ -37,6 +38,10 @@ namespace Server
             {
                 return accounts.TryAdd(account.Username, account);
             }
+            public bool TryGet(string username, out UserAccount account)
+            {
+                return accounts.TryGetValue(username, out account);
+            }
         }
 
         public class AccountService
@@ -48,23 +53,12 @@ namespace Server
                 this.repository = repository;
             }
 
-            public string Register(
-                string username,
-                string email,
-                string password,
-                string displayName)
+            public string Register(string username,string email,string password,string displayName)
             {
                 if (string.IsNullOrWhiteSpace(username) ||
                     username.Length < 3 || username.Length > 32)
                     return "FAIL|INVALID_USERNAME";
-                if (string.IsNullOrWhiteSpace(email) ||
-                     email.Length > 254 ||
-                     email.Contains("|") ||
-                     email.Contains("\r") ||
-                     email.Contains("\n") ||
-                      !System.Text.RegularExpressions.Regex.IsMatch(
-                          email,
-                         @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                if (string.IsNullOrWhiteSpace(email) || email.Length > 254 || email.Contains("|") || email.Contains("\r") || email.Contains("\n") || !System.Text.RegularExpressions.Regex.IsMatch(email,@"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                 {
                     return "FAIL|INVALID_EMAIL";
                 }
@@ -130,6 +124,50 @@ namespace Server
                     return "FAIL|USERNAME_EXISTS";
 
                 return "OK|REGISTERED";
+            }
+
+            public string Login(string username, string password)
+            {
+                if (string.IsNullOrWhiteSpace(username) ||
+                    string.IsNullOrEmpty(password))
+                {
+                    return "FAIL|INVALID_CREDENTIALS";
+                }
+
+                UserAccount account;
+
+                if (!repository.TryGet(username.Trim(), out account))
+                {
+                    return "FAIL|INVALID_CREDENTIALS";
+                }
+
+                byte[] inputHash;
+
+                using (var pbkdf2 = new Rfc2898DeriveBytes(
+                    password,
+                    account.PasswordSalt,
+                    100000))
+                {
+                    inputHash = pbkdf2.GetBytes(32);
+                }
+
+                // So sánh hash mà không dừng ngay ở byte khác biệt đầu tiên.
+                bool match = inputHash.Length == account.PasswordHash.Length;
+                int difference = 0;
+
+                for (int i = 0; i < inputHash.Length; i++)
+                {
+                    difference |= inputHash[i] ^ account.PasswordHash[i];
+                }
+
+                match = match && difference == 0;
+
+                if (!match)
+                {
+                    return "FAIL|INVALID_CREDENTIALS";
+                }
+
+                return $"OK|{account.Username}|{account.DisplayName}";
             }
         }
     }

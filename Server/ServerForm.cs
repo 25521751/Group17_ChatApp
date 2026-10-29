@@ -129,6 +129,50 @@ namespace Chat_room_test_TCP
                             continue;
                         }
 
+
+                        // LOGIN: xác thực tài khoản
+                        else if (command == "LOGIN")
+                        {
+                            string[] fields = data.Split('|');
+
+                            if (fields.Length != 2)
+                            {
+                                await writer.WriteLineAsync(
+                                    "LOGIN_RESULT|FAIL|INVALID_DATA");
+                                continue;
+                            }
+
+                            string username = fields[0];
+                            string password = fields[1];
+
+                            string result = accountService.Login(
+                                username, password);
+
+                            await writer.WriteLineAsync(
+                                "LOGIN_RESULT|" + result);
+
+                            LogServer(
+                                $"Login request: {username} - " +
+                                $"{(result.StartsWith("OK|") ? "Success" : "Failed")}");
+
+                            continue;
+                        }
+
+                        // LOGOUT: đăng xuất khỏi tài khoản
+                        //Theo code server hiện tại 29/10/2026, LOGOUT sẽ đóng kết nối TCP, chứ chưa có hệ thống phiên đăng nhập để thu hồi.
+                        //Vì vậy, đây là đăng xuất ở mức giao thức/kết nối, chưa phải quản lý phiên tài khoản hoàn chỉnh.
+
+                        else if (command == "LOGOUT")
+                        {
+                            await writer.WriteLineAsync(
+                                "LOGOUT_RESULT|OK|LOGGED_OUT");
+
+                            LogServer(
+                                $"Logout request from {client.Client.RemoteEndPoint}");
+
+                            break;
+                        }
+
                         // JOIN: tham gia phòng chat
                         else if (command == "JOIN")
                         {
