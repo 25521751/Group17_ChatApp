@@ -13,6 +13,9 @@ namespace ClientForm
             this.BackColor = AppColors.Background;
             this.FormBorderColor = AppColors.Border;
 
+            txtbox_Password.PasswordChar = '*';
+            btn_ShowPassword.Text = "🔒";
+
             ChatClientManager.Client.LineReceived += Client_LineReceived;
             this.FormClosed += Login_FormClosed;
         }
@@ -176,6 +179,21 @@ namespace ClientForm
         private void txtb_Username_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_ShowPassword_Click(object sender, EventArgs e)
+        {
+            
+            if (txtbox_Password.PasswordChar == '*')
+            {
+                txtbox_Password.PasswordChar = '\0';
+                btn_ShowPassword.Text = "🔓";
+            }
+            else
+            {
+                txtbox_Password.PasswordChar = '*';
+                btn_ShowPassword.Text = "🔒";
+            }
         }
     }
 }

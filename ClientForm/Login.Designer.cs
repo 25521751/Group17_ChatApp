@@ -37,6 +37,7 @@ namespace ClientForm
             btn_Login = new Button();
             btn_Register = new Button();
             lkb_ForgotPassword = new LinkLabel();
+            btn_ShowPassword = new Button();
             SuspendLayout();
             // 
             // Logintext
@@ -132,11 +133,25 @@ namespace ClientForm
             lkb_ForgotPassword.Text = "Quên mật khẩu?";
             lkb_ForgotPassword.LinkClicked += lkb_ForgotPassword_LinkClicked;
             // 
+            // btn_ShowPassword
+            // 
+            btn_ShowPassword.Font = new Font("Segoe UI", 13F);
+            btn_ShowPassword.ImageAlign = ContentAlignment.BottomRight;
+            btn_ShowPassword.Location = new Point(617, 318);
+            btn_ShowPassword.Margin = new Padding(3, 4, 3, 4);
+            btn_ShowPassword.Name = "btn_ShowPassword";
+            btn_ShowPassword.Size = new Size(38, 45);
+            btn_ShowPassword.TabIndex = 22;
+            btn_ShowPassword.Text = "🔒";
+            btn_ShowPassword.UseVisualStyleBackColor = true;
+            btn_ShowPassword.Click += btn_ShowPassword_Click;
+            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(727, 865);
+            Controls.Add(btn_ShowPassword);
             Controls.Add(lkb_ForgotPassword);
             Controls.Add(btn_Register);
             Controls.Add(btn_Login);
@@ -164,5 +179,6 @@ namespace ClientForm
         private Button btn_Login;
         private Button btn_Register;
         private LinkLabel lkb_ForgotPassword;
+        private Button btn_ShowPassword;
     }
 }
